@@ -1,10 +1,21 @@
-import { Hono } from 'hono'
+import { ProjectModel } from '../models/ProjectModel.ts'
 
-const projectRoute = new Hono()
+class ProjectController {
 
-projectRoute.get('/', (c) => {
-  return c.text("test")
-})
+  //Trouve pas la methode get ?? 
+  static public get(c) {
+    const projectModel = new ProjectModel();
+    const all = projectModel.getAll(); 
+    return c.text("test")
+  } 
 
-//TODO Creer un project et le stocké en db (mariadb ? sqlite ?)
-export default projectRoute
+  static public async create(c) {
+    const projectModel = new ProjectModel();
+    const createData = await c.req.json();
+
+    //TODO Valider les datas (vinejs si possible)
+    await projectModel.createProject()
+  }
+
+}
+export default ProjectController
