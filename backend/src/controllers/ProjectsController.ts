@@ -1,20 +1,26 @@
 import { ProjectModel } from '../models/ProjectModel.ts'
+import { projectSchema } from '../validators/projects'
+import vine from '@vinejs/vine'
 
 class ProjectController {
 
-  //Trouve pas la methode get ?? 
-  static public get(c) {
+  static public async get(c) {
     const projectModel = new ProjectModel();
-    const all = projectModel.getAll(); 
+    const all = await projectModel.getAll(); 
+    if (!all) return c.text("No project founded")
     return c.text("test")
-  } 
+  }
 
   static public async create(c) {
+    const body = await c.req.json();
+    console.log(body)
+    
     const projectModel = new ProjectModel();
-    const createData = await c.req.json();
-
-    //TODO Valider les datas (vinejs si possible)
-    await projectModel.createProject()
+    const date = new Date();
+    const newProject = { name: body.name, status: body.status, createdAt: `${date.getTime()}`, updatedAt: `${date.getTime()}` }
+    const validatedData = await vine.validate({schema: projectSchema, data: newProject })
+    await projectModel.createProject(validatedData)
+    return c.text("Project created")
   }
 
 }
