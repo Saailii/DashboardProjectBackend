@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import projectRoute from '../src/routes/ProjectRoute'
+import taskRoute from '../src/routes/TaskRoute'
 
 const app = new Hono()
 
@@ -9,6 +10,7 @@ app.get('/', (c) => {
 })
 // Route pour gerer les projects (a voir comment je la fait)
 app.route('/project', projectRoute) 
+app.route('/task', taskRoute)
 
 serve({
   fetch: app.fetch,

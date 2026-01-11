@@ -1,27 +1,39 @@
 import { ProjectModel } from '../models/ProjectModel.ts'
-import { projectSchema } from '../validators/projects'
+import { projectSchema } from '../validators/projectsValidator'
 import vine from '@vinejs/vine'
 
 class ProjectController {
 
   static public async get(c) {
-    const projectModel = new ProjectModel();
-    const all = await projectModel.getAll(); 
-    if (!all) return c.text("No project founded")
-    return c.text("test")
+    const all = await ProjectModel.getAll(); 
+
+    if (!all) return c.text("No project founded");
+    return c.json(all);
+  }
+
+  static public async getById(c) {
+    // Get the id from the params
+    const id = c.req.param("id");
+    if (!id) return c.text("No id provided from the query param")
+
+    const project = await ProjectModel.getById(id)
+    return c.json(project);
   }
 
   static public async create(c) {
+    // get the body in json and verifiy if it's provided enough information
     const body = await c.req.json();
-    console.log(body)
-    
-    const projectModel = new ProjectModel();
+    if (!body.name || !body.status) return c.text("Manque un nom de projet ou un status");
+    // Create the project based on the data provided. Date are created when the method is being called. (Need to figure it out how to change the updatedAt)
     const date = new Date();
-    const newProject = { name: body.name, status: body.status, createdAt: `${date.getTime()}`, updatedAt: `${date.getTime()}` }
-    const validatedData = await vine.validate({schema: projectSchema, data: newProject })
-    await projectModel.createProject(validatedData)
-    return c.text("Project created")
+    const newProject = { name: body.name, status: body.status, createdAt: date.getTime(), updatedAt:date.getTime() };
+    // Using vineJs as a validator with the an precise schema
+    const validatedData = await vine.validate({schema: projectSchema, data: newProject });
+    
+    if (!validatedData) return c.text("Data not validated");
+    await ProjectModel.createProject(validatedData);
+    return c.text("Project was successfully created");
   }
-
+ 
 }
 export default ProjectController

@@ -1,6 +1,9 @@
+import type { Task } from './taskType'
+
 export type Project { 
   name: string,
   status: string,
-  createdAt: string,
-  updatedAt: string
+  tasks: Task[],
+  createdAt: number,
+  updatedAt: number 
 }
