@@ -26,3 +26,6 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+#db i let the schema for sending that to people
+sqlite.db
