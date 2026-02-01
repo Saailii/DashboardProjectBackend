@@ -9,6 +9,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.6",
     "@libsql/client": "^0.15.15",
+    "@vinejs/vine": "^4.2.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.11.3"

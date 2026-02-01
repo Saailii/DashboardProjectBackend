@@ -1,16 +1,17 @@
+import type { Context } from 'hono';
 import { TaskModel } from '../models/TaskModel'
 import { taskValidator } from '../validators/taskValidator'
 import vine from '@vinejs/vine'
 
 class TaskController {
 
-  static public async get(c) {
-    const all = await TaskModel.getAll(); 
+  public static async get(c: Context) {
+    const all = await TaskModel.getAll();
     if (!all) return c.text("No Task founded");
     return c.json(all);
   }
-  
-  static public async getAllByProjectId(c) {
+
+  public static async getAllByProjectId(c: Context) {
     const id = c.req.param("id");
     if (!id) return c.text("no params provided");
 
@@ -19,7 +20,7 @@ class TaskController {
     return c.json(allTasks);
   }
 
-  static public async create(c) {
+  public static async create(c: Context) {
     // Get the body in json and verify if enough information is provided
     const body = await c.req.json();
     if (!body.name || !body.status || !body.description) return c.text("Manque le nom de la task ou le status ou la description...");
@@ -31,8 +32,8 @@ class TaskController {
     // Instantiante an date when  the method is being called (createdAt, updatedAt)
     const date = new Date();
 
-    const newTask = { 
-      name: body.name, 
+    const newTask = {
+      name: body.name,
       status: body.status,
       description: body.description,
       projectId: id,
@@ -40,31 +41,32 @@ class TaskController {
       updatedAt: date.getTime()
     };
 
-    const validatedData = await vine.validate({schema: taskValidator, data: newTask });
+    const validatedData = await vine.validate({ schema: taskValidator, data: newTask });
     if (!validatedData) return c.text("Data not validated");
 
-    
+
     await TaskModel.createTask(validatedData);
     return c.text("Task was successfully created");
 
   }
 
-  static public async updateTaskById(c) {
+  public static async updateTaskById(c: Context) {
     const id = c.req.param("id");
     if (!id) return c.text("No id provided")
     const body = await c.req.json();
-    if(!body) return c.text("Need an task as a body")
-    console.log(body) 
+    if (!body) return c.text("Need an task as a body")
+    console.log(body)
     const date = new Date();
-    const updatedTask = { name: body.name, 
-      status: body.status, 
+    const updatedTask = {
+      name: body.name,
+      status: body.status,
       description: body.description,
       projectId: body.projectId,
       createdAt: date.getTime(),
       updatedAt: date.getTime()
-    } 
+    }
 
-    const task = await vine.validate({schema: taskValidator, data: updatedTask});
+    const task = await vine.validate({ schema: taskValidator, data: updatedTask });
 
     const taskUpdated = await TaskModel.updateTaskById(id, task)
     if (!taskUpdated) return c.text("Cannot Update the task")
